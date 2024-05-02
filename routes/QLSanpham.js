@@ -2,10 +2,14 @@ var router= require('express')();
 var db=require('./dbconnext');
 
 router.get('/',(req,res)=>{
-    var query='SELECT s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong, s.Mota, l.TenLoai from sanpham as s inner join loaisanpham as l on s.MaLoai = l.MaLoai ';
+    var query=`SELECT s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong, s.Mota, l.TenLoai, SUM(c.SoLuong) AS TongSoLuongDaBan
+                FROM sanpham AS s
+                INNER JOIN loaisanpham AS l ON s.MaLoai = l.MaLoai
+                LEFT JOIN chitiethoadonban AS c ON s.MaSanPham = c.MaSanPham
+                GROUP BY s.MaSanPham;`;
     db.query(query,(error,result)=>{
         if(error) res.status(500).send('Loi ket noi csdl');
-        res.json(result);
+        return res.json(result);
     });
 
 });

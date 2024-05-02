@@ -18,6 +18,7 @@ router.get('/', (req, res) => {
         FROM 
             donhang AS d 
             INNER JOIN khachhang AS k ON d.MaKhachHang = k.MaKhachHang
+        Order by d.MaDonHang desc
     `;
     
     db.query(query, (error, result) => {
@@ -133,17 +134,87 @@ router.get('/get-one-donhang/:id',function(req,res){
 
 router.post('/edit/:id', function(req, res) {
     var { TrangThai } = req.body;
-    console.log(req.params.id);
-
-    var query = `UPDATE donhang SET TrangThai = '${TrangThai}' WHERE MaDonHang = '${req.params.id}'`;
-    console.log(query);
-    db.query(query, function(error, result) {
+    
+    var updateQuery = `UPDATE donhang SET TrangThai = '${TrangThai}' WHERE MaDonHang = '${req.params.id}'`;
+    
+    // Thực hiện truy vấn cập nhật trạng thái đơn hàng
+    db.query(updateQuery, function(error, result) {
         if (error) {
             console.error('Error updating order status:', error);
-            res.status(500).send('Internal Server Error');
-        } else {
-            res.json(result);
+            return res.status(500).send('Internal Server Error');
         }
+        
+        // Thực hiện truy vấn lấy dữ liệu đơn hàng
+        var selectQuery = `SELECT * FROM chitietdonhang as c 
+                            INNER JOIN donhang as d 
+                            ON c.MaDonHang = d.MaDonHang
+                            WHERE c.MaDonHang = '${req.params.id}'`;
+        
+        db.query(selectQuery, function(error, result) {
+            if (error) {
+                console.error('Error querying order:', error);
+                return res.status(500).send('Internal Server Error');
+            }
+            var processedData = [];
+
+            result.forEach(function(item) {
+                var existingIndex = processedData.findIndex(function(element) {
+                    return element.MaDonHang === item.MaDonHang;
+                });
+
+                if (existingIndex === -1) {
+                    processedData.push({
+                        MaDonHang: item.MaDonHang,
+                        MaKhachHang: item.MaKhachHang,
+                        ThanhTien: item.thanhtien,
+                        chitietdonhang: [{
+                            MaChiTietDonHang: item.MaChiTietDonHang,
+                            MaSanPham: item.MaSanPham,
+                            SoLuong: item.SoLuong,
+                            GiaBan: item.GiaBan
+                        }]
+                    });
+                } else {
+                    processedData[existingIndex].chitietdonhang.push({
+                        MaChiTietDonHang: item.MaChiTietDonHang,
+                        MaSanPham: item.MaSanPham,
+                        SoLuong: item.SoLuong,
+                        GiaBan: item.GiaBan
+                    });
+                }
+            });
+
+            processedData.forEach((item) => {
+                var insertHDB = `INSERT INTO hoadonban (MaKhachHang, NgayBan, ThanhTien, created_at, updated_at) 
+                                VALUES ('${item.MaKhachHang}', Now(), '${item.ThanhTien}', Now(), Now())`;
+                
+                // Thực hiện truy vấn thêm hóa đơn bán
+                db.query(insertHDB, function(error, result) {
+                    if (error) {
+                        console.error('Error inserting sale invoice:', error);
+                        return res.status(500).send('Internal Server Error');
+                    }
+                    
+                    var idHDB = result.insertId;
+                    item.chitietdonhang.forEach((row) => {
+                        var insertCTHDB = `INSERT INTO chitiethoadonban (MaHoaDonBan, MaSanPham, SoLuong, GiaBan, created_at, updated_at)
+                                            VALUES ('${idHDB}', '${row.MaSanPham}', '${row.SoLuong}', '${row.GiaBan}', Now(), Now())`;
+        
+                        // Thực hiện truy vấn thêm chi tiết hóa đơn bán
+                        db.query(insertCTHDB, function(error, result) {
+                            if (error) {
+                                console.error('Error inserting sale invoice details:', error);
+                                return res.status(500).send('Internal Server Error');
+                            }
+                            
+                            return res.status(200).json(result);
+                        });
+                    })
+                });
+            })
+
+        });
     });
+    return res.status(200).json();
 });
 module.exports = router;

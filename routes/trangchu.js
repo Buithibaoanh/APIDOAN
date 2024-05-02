@@ -2,11 +2,16 @@ var router= require('express')();
 var db=require('./dbconnext');
 
 router.get('/:sl', (req, res) => {
-    var query = `SELECT s.MaSanPham,s.TenSanPham, s.Anh, s.SoLuong, s.Mota, tskt.KichCoManHinh, tskt.DoPhanGiai, tskt.LoaiManHinh, tskt.HeDieuHanh, tskt.ChatLieuChanDe, tskt.ChatLieuVienTiVi, g.Gia 
-    FROM sanpham AS s INNER JOIN giaban AS g ON s.MaSanPham = g.MaSanPham 
-    INNER JOIN thongsokythuat AS tskt ON s.MaSanPham = tskt.MaSanPham
-    LIMIT ${parseInt(req.params.sl)};
-    `;
+    var query = `SELECT s.MaSanPham,s.TenSanPham, s.Anh, s.SoLuong, s.Mota, tskt.KichCoManHinh, 
+                tskt.DoPhanGiai, tskt.LoaiManHinh, tskt.HeDieuHanh, tskt.ChatLieuChanDe, 
+                tskt.ChatLieuVienTiVi, g.Gia, SUM(c.SoLuong) AS TongSoLuongDaBan
+                FROM sanpham AS s INNER JOIN giaban AS g ON s.MaSanPham = g.MaSanPham 
+                INNER JOIN thongsokythuat AS tskt ON s.MaSanPham = tskt.MaSanPham
+                LEFT JOIN chitiethoadonban AS c ON s.MaSanPham = c.MaSanPham
+                GROUP BY s.MaSanPham,s.TenSanPham, s.Anh, s.SoLuong, s.Mota, tskt.KichCoManHinh, 
+                tskt.DoPhanGiai, tskt.LoaiManHinh, tskt.HeDieuHanh, tskt.ChatLieuChanDe, 
+                tskt.ChatLieuVienTiVi, g.Gia
+                LIMIT ${parseInt(req.params.sl)}`;
     db.query(query,(error,result)=>{
         if(error) res.status(500).send('Loi ket noi csdl');
         res.json(result);
@@ -14,9 +19,16 @@ router.get('/:sl', (req, res) => {
   
 });
 router.get('/get-one/:id',function(req,res){
-    var query = `SELECT s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong, s.Mota, tskt.KichCoManHinh, tskt.DoPhanGiai, tskt.LoaiManHinh, tskt.HeDieuHanh, tskt.ChatLieuChanDe, tskt.ChatLieuVienTiVi, g.Gia 
-    FROM sanpham AS s INNER JOIN giaban AS g ON s.MaSanPham = g.MaSanPham 
-    INNER JOIN thongsokythuat AS tskt ON s.MaSanPham = tskt.MaSanPham where s.MaSanPham=`+req.params.id ;
+    var query = `SELECT s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong, s.Mota, 
+                tskt.KichCoManHinh, tskt.DoPhanGiai, tskt.LoaiManHinh, tskt.HeDieuHanh, 
+                tskt.ChatLieuChanDe, tskt.ChatLieuVienTiVi, g.Gia, SUM(c.SoLuong) AS TongSoLuongDaBan
+                FROM sanpham AS s INNER JOIN giaban AS g ON s.MaSanPham = g.MaSanPham 
+                INNER JOIN thongsokythuat AS tskt ON s.MaSanPham = tskt.MaSanPham 
+                LEFT JOIN chitiethoadonban AS c ON s.MaSanPham = c.MaSanPham
+                where s.MaSanPham = ${req.params.id}
+                GROUP BY s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong, s.Mota, 
+                tskt.KichCoManHinh, tskt.DoPhanGiai, tskt.LoaiManHinh, tskt.HeDieuHanh, 
+                tskt.ChatLieuChanDe, tskt.ChatLieuVienTiVi, g.Gia`;
     db.query(query,function(error,result){
         if(error) res.status(500).send('Loi cau lenh truy van');
         res.json(result);
@@ -25,11 +37,14 @@ router.get('/get-one/:id',function(req,res){
 });
 router.get('/spmv/:sl', function(req, res) {
     var query = `
-        SELECT sp.MaSanPham, sp.TenSanPham, sp.Anh, g.Gia, tskt.KichCoManHinh, tskt.DoPhanGiai 
+        SELECT sp.MaSanPham, sp.TenSanPham, sp.Anh, g.Gia, tskt.KichCoManHinh, 
+        tskt.DoPhanGiai, SUM(c.SoLuong) AS TongSoLuongDaBan
         FROM sanpham AS sp 
         INNER JOIN giaban AS g ON sp.MaSanPham = g.MaSanPham 
         INNER JOIN thongsokythuat AS tskt ON sp.MaSanPham = tskt.MaSanPham 
-        ORDER BY NgayTao DESC
+        LEFT JOIN chitiethoadonban AS c ON sp.MaSanPham = c.MaSanPham
+        GROUP BY sp.MaSanPham, sp.TenSanPham, sp.Anh, g.Gia, tskt.KichCoManHinh, tskt.DoPhanGiai
+        ORDER BY sp.NgayTao DESC
         LIMIT ${parseInt(req.params.sl)};
     `;
 
