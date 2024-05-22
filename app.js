@@ -52,6 +52,9 @@ app.use('/QLDonHang',QLDonHangRoute);
 var ThongkeRoute=require('./routes/Thongke');
 app.use('/Thongke',ThongkeRoute);
 
+var KhoRouter = require('./routes/QLKho');
+app.use('/kho',KhoRouter);
+
 
 
 

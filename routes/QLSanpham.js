@@ -2,11 +2,13 @@ var router= require('express')();
 var db=require('./dbconnext');
 
 router.get('/',(req,res)=>{
-    var query=`SELECT s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong, s.Mota, l.TenLoai, SUM(c.SoLuong) AS TongSoLuongDaBan
+    var query=`SELECT s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong, s.Mota, l.TenLoai, 
+                SUM(c.SoLuong) AS TongSoLuongDaBan
                 FROM sanpham AS s
                 INNER JOIN loaisanpham AS l ON s.MaLoai = l.MaLoai
                 LEFT JOIN chitiethoadonban AS c ON s.MaSanPham = c.MaSanPham
-                GROUP BY s.MaSanPham;`;
+                GROUP BY s.MaSanPham
+                ORDER BY s.MaSanPham desc`;
     db.query(query,(error,result)=>{
         if(error) res.status(500).send('Loi ket noi csdl');
         return res.json(result);
@@ -62,5 +64,22 @@ router.delete('/remove/:id',function(req,res){
         res.json(result);
     });
 
+});
+
+router.post('/search',function(req,res){
+    var keyword= req.body.keyword;
+    console.log(keyword);
+
+    var query = `SELECT s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong, s.Mota, l.TenLoai, 
+                SUM(c.SoLuong) AS TongSoLuongDaBan
+                FROM sanpham AS s
+                INNER JOIN loaisanpham AS l ON s.MaLoai = l.MaLoai
+                LEFT JOIN chitiethoadonban AS c ON s.MaSanPham = c.MaSanPham
+                where s.TenSanPham like '%${keyword}%' or l.TenLoai like '%${keyword}%'
+                GROUP BY s.MaSanPham`;
+    db.query(query,function(error,result){
+        if(error) res.status(500).send('Loi cau lenh truy van');
+        res.json(result);
+    });
 });
 module.exports = router;

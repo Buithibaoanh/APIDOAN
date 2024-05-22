@@ -24,7 +24,7 @@ router.get('/get-one/:id',function(req,res){
                 tskt.ChatLieuChanDe, tskt.ChatLieuVienTiVi, g.Gia, SUM(c.SoLuong) AS TongSoLuongDaBan
                 FROM sanpham AS s INNER JOIN giaban AS g ON s.MaSanPham = g.MaSanPham 
                 INNER JOIN thongsokythuat AS tskt ON s.MaSanPham = tskt.MaSanPham 
-                LEFT JOIN chitiethoadonban AS c ON s.MaSanPham = c.MaSanPham
+                left JOIN chitiethoadonban AS c ON s.MaSanPham = c.MaSanPham
                 where s.MaSanPham = ${req.params.id}
                 GROUP BY s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong, s.Mota, 
                 tskt.KichCoManHinh, tskt.DoPhanGiai, tskt.LoaiManHinh, tskt.HeDieuHanh, 
@@ -62,6 +62,24 @@ router.get('/categori/:id', function(req, res) {
     where MaLoai =  ${parseInt(req.params.id)};
     `;
 
+    db.query(query,function(error,result){
+        if(error) res.status(500).send('Loi cau lenh truy van');
+        res.json(result);
+    });
+});
+
+router.post('/search', function(req, res){
+    let keyword = req.body.keyword;
+    var query = `SELECT s.MaSanPham,s.TenSanPham, s.Anh, s.SoLuong, s.Mota, tskt.KichCoManHinh, 
+                tskt.DoPhanGiai, tskt.LoaiManHinh, tskt.HeDieuHanh, tskt.ChatLieuChanDe, 
+                tskt.ChatLieuVienTiVi, g.Gia, SUM(c.SoLuong) AS TongSoLuongDaBan
+                FROM sanpham AS s INNER JOIN giaban AS g ON s.MaSanPham = g.MaSanPham 
+                INNER JOIN thongsokythuat AS tskt ON s.MaSanPham = tskt.MaSanPham
+                LEFT JOIN chitiethoadonban AS c ON s.MaSanPham = c.MaSanPham
+                GROUP BY s.MaSanPham,s.TenSanPham, s.Anh, s.SoLuong, s.Mota, tskt.KichCoManHinh, 
+                tskt.DoPhanGiai, tskt.LoaiManHinh, tskt.HeDieuHanh, tskt.ChatLieuChanDe, 
+                tskt.ChatLieuVienTiVi, g.Gia
+                where s.TenSanPham like '%${keyword}'`;
     db.query(query,function(error,result){
         if(error) res.status(500).send('Loi cau lenh truy van');
         res.json(result);

@@ -30,8 +30,7 @@ router.get('/', (req, res) => {
     });
 });
 
-router.post('/ThemDH', async (req, res) => {
-    
+router.post('/ThemDH', (req, res) => {
     try {
         const {
             Hoten,
@@ -203,11 +202,26 @@ router.post('/edit/:id', function(req, res) {
                         // Thực hiện truy vấn thêm chi tiết hóa đơn bán
                         db.query(insertCTHDB, function(error, result) {
                             if (error) {
-                                console.error('Error inserting sale invoice details:', error);
                                 return res.status(500).send('Internal Server Error');
                             }
+
+                            let querySp = `Select s.SoLuong from sanpham as s where s.MaSanPham = '${row.MaSanPham}';`
+                            db.query(querySp, function(error, result) {
+                                if (error) {
+                                    return res.status(500).send('Internal Server Error');
+                                }
+                                const soLuong = result[0].SoLuong;
+                                let updateSoLuong = soLuong - row.SoLuong;
+
+                                let queryUpdate = `Update sanpham set SoLuong = '${updateSoLuong}' where MaSanPham = '${row.MaSanPham}'`;
+                                db.query(queryUpdate, function(error, result) {
+                                    if (error) {
+                                        return res.status(500).send('Internal Server Error');
+                                    }
+
+                                });
+                            });
                             
-                            return res.status(200).json(result);
                         });
                     })
                 });
