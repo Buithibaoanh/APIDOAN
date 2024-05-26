@@ -47,4 +47,15 @@ router.delete('/remove/:id',function(req,res){
     });
 
 });
+router.post('/search',function(req,res){
+    var keyword= req.body.keyword;
+    console.log(keyword);
+
+    var query = `SELECT * FROM loaisanpham
+                where TenLoai like '%${keyword}%'`;
+    db.query(query,function(error,result){
+        if(error) res.status(500).send('Loi cau lenh truy van');
+        res.json(result);
+    });
+});
 module.exports = router;

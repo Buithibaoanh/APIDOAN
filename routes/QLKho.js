@@ -45,7 +45,7 @@ router.post('/add',function(req,res){
     var query="insert into kho (TenKho,DiaChi,created_at, updated_at) values('"+TenKho+"','"+DiaChi+"',NOW(), NOW())";
     db.query(query,function(error,result){
         if(error) res.status(500).send('Loi cau lenh truy van');
-        res.status(200).json(result);
+        return res.status(200).json(result);
     });
 
 });

@@ -12,8 +12,8 @@ router.get('/', (req, res) => {
             k.SoDienThoai, 
             d.NgayDat,
             CASE 
-                WHEN d.TrangThai = 1 THEN 'Processed'
-                ELSE 'Pending'
+                WHEN d.TrangThai = 1 THEN 'Đã xác nhận'
+                ELSE 'Chờ xác nhận'
             END AS TrangThaiText
         FROM 
             donhang AS d 
