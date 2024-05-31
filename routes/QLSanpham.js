@@ -71,7 +71,7 @@ router.post('/add',function(req,res){
     var soluong= req.body.SoLuong;
     var mota= req.body.Mota;
     var query=`insert into sanpham (TenSanPham,MaLoai,Anh,SoLuong,Mota,NgayTao,created_at) 
-    values('"+tensanpham+"','"+maloai+"','"+anh+"','"+soluong+"','"+mota+"',NOW(),NOW())`;
+    values('${tensanpham}','${maloai}','${anh}','${soluong}','${mota}',NOW(),NOW())`;
     db.query(query,function(error,result){
         if(error) res.status(500).send('Loi cau lenh truy van');
         var idgia = result.insertId;
