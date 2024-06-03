@@ -80,8 +80,8 @@ router.post('/add',function(req,res){
         db.query(queryGia,function(error,result){
             if(error) res.status(500).send('Loi cau lenh truy van');
         });
-        return res.status(200);
     });
+    return res.status(200);
 
 });
 router.delete('/remove/:id',function(req,res){

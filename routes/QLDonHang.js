@@ -158,11 +158,13 @@ router.get('/get-one/:id', function(req, res) {
             sp.Anh, 
             ctdh.SoLuong, 
             ctdh.GiaBan,
-            ctdh.SoLuong * ctdh.GiaBan AS ThanhTien
+            ctdh.SoLuong * ctdh.GiaBan AS ThanhTien,
+            k.TenKhachHang, k.SoDienThoai, k.DiaChi
         FROM 
             ChiTietDonHang AS ctdh
             INNER JOIN SanPham AS sp ON ctdh.MaSanPham = sp.MaSanPham
             INNER JOIN DonHang AS dh ON ctdh.MaDonHang = dh.MaDonHang
+            inner join khachhang as k on dh.MaKhachHang = k.MaKhachHang
         WHERE 
             dh.MaDonHang = ${req.params.id}`;
     

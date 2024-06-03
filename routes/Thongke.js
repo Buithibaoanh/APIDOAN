@@ -2,7 +2,6 @@ var router= require('express')();
 var db=require('./dbconnext');
 router.get('/thongketheongay/:day', function(req, res) {
     var ngay = req.params.day; // Assuming the date is passed in the URL parameter
-    console.log(ngay);
     var query = `
                 SELECT 
                 kh.MaKhachHang,
