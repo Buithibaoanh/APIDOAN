@@ -12,7 +12,7 @@ router.get('/',(req,res)=>{
 });
 router.get('/get-one/:id',function(req,res){
     var query = `Select c.SoLuong as SoLuongNhap, s.TenSanPham, l.TenLoai, s.Anh,
-                s.SoLuong as SoLuongHienTai, g.Gia, (c.SoLuong * g.Gia) as Total
+                s.SoLuong as SoLuongHienTai, g.Gia, (c.SoLuong * g.Gia) as Total, c.created_at
                 from kho as k
                 inner join chitietkho as c on c.MaKho = k.MaKho
                 inner join sanpham as s on s.MaSanPham = c.MaSanPham
@@ -72,8 +72,8 @@ router.post('/Them',function(req,res){
     db.query(query1,function(error,result){
         if(error) res.status(500).send('Loi cau lenh truy van');
         Gia = result[0].Gia;
-        let query2 = `Insert into chitietkho (MaSanPham, MaKho, SoLuong) 
-                values ('${MaSanPham}', '${MaKho}', '${SoLuong}');`;
+        let query2 = `Insert into chitietkho (MaSanPham, MaKho, SoLuong, created_at, updated_at) 
+                values ('${MaSanPham}', '${MaKho}', '${SoLuong}', NOW(), NOW());`;
         db.query(query2,function(error,result){
             if(error) res.status(500).send('Loi cau lenh truy van');
             let total = Gia * SoLuong;
