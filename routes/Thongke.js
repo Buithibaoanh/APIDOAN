@@ -41,8 +41,8 @@ router.get('/thongketheothang/:month', function(req, res) {
     var thang = req.params.month; // Assuming the month is passed in the URL parameter (format: 'YYYY-MM')
 
     var query = `
-        SELECT 
-             
+        SELECT
+
             kh.TenKhachHang, 
             ctdh.MaSanPham,
             sp.TenSanPham,
