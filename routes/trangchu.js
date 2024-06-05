@@ -35,22 +35,39 @@ router.get('/get-one/:id',function(req,res){
 
     });
 });
+// router.get('/spmv/:sl', function(req, res) {
+//     var query = `
+//         SELECT sp.MaSanPham, sp.TenSanPham, sp.Anh, g.Gia, tskt.KichCoManHinh, 
+//         tskt.DoPhanGiai, SUM(c.SoLuong) AS TongSoLuongDaBan
+//         FROM sanpham AS sp 
+//         INNER JOIN giaban AS g ON sp.MaSanPham = g.MaSanPham 
+//         INNER JOIN thongsokythuat AS tskt ON sp.MaSanPham = tskt.MaSanPham 
+//         LEFT JOIN chitiethoadonban AS c ON sp.MaSanPham = c.MaSanPham
+//         GROUP BY sp.MaSanPham, sp.TenSanPham, sp.Anh, g.Gia, tskt.KichCoManHinh, tskt.DoPhanGiai
+//         ORDER BY sp.NgayTao DESC
+//         LIMIT ${parseInt(req.params.sl)};
+//     `;
+
+//     db.query(query,function(error,result){
+//         if(error) res.status(500).send('Loi cau lenh truy van');
+//         res.json(result);
+//     });
+// });
 router.get('/spmv/:sl', function(req, res) {
     var query = `
-        SELECT sp.MaSanPham, sp.TenSanPham, sp.Anh, g.Gia, tskt.KichCoManHinh, 
-        tskt.DoPhanGiai, SUM(c.SoLuong) AS TongSoLuongDaBan
-        FROM sanpham AS sp 
-        INNER JOIN giaban AS g ON sp.MaSanPham = g.MaSanPham 
-        INNER JOIN thongsokythuat AS tskt ON sp.MaSanPham = tskt.MaSanPham 
-        LEFT JOIN chitiethoadonban AS c ON sp.MaSanPham = c.MaSanPham
-        GROUP BY sp.MaSanPham, sp.TenSanPham, sp.Anh, g.Gia, tskt.KichCoManHinh, tskt.DoPhanGiai
-        ORDER BY sp.NgayTao DESC
-        LIMIT ${parseInt(req.params.sl)};
+      SELECT sp.MaSanPham, sp.TenSanPham, sp.Anh, g.Gia, tskt.KichCoManHinh, tskt.DoPhanGiai, SUM(c.SoLuong) AS TongSoLuongDaBan
+      FROM sanpham AS sp
+      INNER JOIN giaban AS g ON sp.MaSanPham = g.MaSanPham
+      INNER JOIN thongsokythuat AS tskt ON sp.MaSanPham = tskt.MaSanPham
+      LEFT JOIN chitiethoadonban AS c ON sp.MaSanPham = c.MaSanPham
+      GROUP BY sp.MaSanPham, sp.TenSanPham, sp.Anh, g.Gia, tskt.KichCoManHinh, tskt.DoPhanGiai
+      ORDER BY sp.NgayTao DESC
+      LIMIT ${parseInt(req.params.sl)};
     `;
-
-    db.query(query,function(error,result){
-        if(error) res.status(500).send('Loi cau lenh truy van');
-        res.json(result);
+  
+    db.query(query, function(error, result){
+      if(error) res.status(500).send('Loi cau lenh truy van');
+      res.json(result);
     });
 });
 router.get('/categori/:id', function(req, res) {
