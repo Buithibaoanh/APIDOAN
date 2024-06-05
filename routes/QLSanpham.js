@@ -26,7 +26,7 @@ router.get('/get-one/:id',function(req,res){
         res.json(result);
 
     });
-    
+ 
 });
 router.put('/edit/:id',function(req,res){
     var tensanpham= req.body.TenSanPham;
