@@ -21,8 +21,8 @@ router.get('/', (req, res) => {
             CASE 
                 WHEN d.TrangThai = 0 THEN 'Chờ xử lý'
                 WHEN d.TrangThai = 1 THEN 'Đã xác nhận'
-                WHEN d.TrangThai = 2 THEN 'Giao thành công'
-                WHEN d.TrangThai = 3 THEN 'Đang giao hàng'
+                WHEN d.TrangThai = 2 THEN 'Đang giao hàng'
+                WHEN d.TrangThai = 3 THEN 'Giao thành công'
                 WHEN d.TrangThai = 4 THEN 'Đã hoàn hàng'
                 ELSE 'Trạng thái không xác định'
             END AS TrangThaiText
@@ -75,11 +75,7 @@ router.post('/ThemDH', (req, res) => {
                                 const query = `
                                     INSERT INTO chitietdonhang (MaDonHang, MaSanPham, SoLuong, GiaBan)
                                     VALUES ('${Donhang_id}', '${MaSanPham}', '${quantity}', '${Gia}')`;
-                                db.query(query, (error,result) => {
-                                    if(error) res.status(500).send('Loi ở đơn hàng');
-                                    return res.status(200).json(result);
-
-                                });
+                                db.query(query, (error,result) => {});
                             }
 
                             return res.status(200).json(result);
@@ -220,8 +216,8 @@ router.post('/edit/:id', function(req, res) {
             });
 
             processedData.forEach((item) => {
-                var insertHDB = `INSERT INTO hoadonban (MaKhachHang, NgayBan, ThanhTien, created_at, updated_at) 
-                                VALUES ('${item.MaKhachHang}', Now(), '${item.ThanhTien}', Now(), Now())`;
+                var insertHDB = `INSERT INTO hoadonban (MaKhachHang, NgayBan, ThanhTien, created_at, updated_at, MaDonHang) 
+                                VALUES ('${item.MaKhachHang}', Now(), '${item.ThanhTien}', Now(), Now(), '${req.params.id}')`;
                 
                 // Thực hiện truy vấn thêm hóa đơn bán
                 db.query(insertHDB, function(error, result) {
@@ -350,6 +346,13 @@ router.post('/cancel/:id', async function(req, res) {
             const queryUpdate = `UPDATE sanpham SET SoLuong = ? WHERE MaSanPham = ?`;
             return connection.execute(queryUpdate, [newSoLuong, item.MaSanPham]);
         });
+
+        //xóa hóa đơn bán
+        const queryHdb = `Select * from hoadonban where MaDonHang = ?`;
+        const [resultHdb] = await connection.execute(queryHdb, [maDH]);
+
+        const queryHdbDelete = `Delete from hoadonban where MaHoaDonBan = ?`;
+        await connection.execute(queryHdbDelete, [resultHdb[0].MaHoaDonBan]);
 
         await Promise.all(updatePromises);
 
