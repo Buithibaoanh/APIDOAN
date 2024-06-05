@@ -23,7 +23,7 @@ router.get('/', (req, res) => {
                 WHEN d.TrangThai = 1 THEN 'Đã xác nhận'
                 WHEN d.TrangThai = 2 THEN 'Giao thành công'
                 WHEN d.TrangThai = 3 THEN 'Từ chối'
-                WHEN d.TrangThai = 4 THEN 'Hủy'
+                WHEN d.TrangThai = 4 THEN 'Đã hoàn hàng'
                 ELSE 'Trạng thái không xác định'
             END AS TrangThaiText
         FROM 
