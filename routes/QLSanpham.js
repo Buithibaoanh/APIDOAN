@@ -7,7 +7,7 @@ router.get('/',(req,res)=>{
                 FROM sanpham AS s
                 INNER JOIN loaisanpham AS l ON s.MaLoai = l.MaLoai
                 INNER JOIN giaban AS g ON s.MaSanPham = g.MaSanPham
-                LEFT JOIN chitietdonhang AS c ON s.MaSanPham = c.MaSanPham
+                LEFT JOIN chitiethoadonban AS c ON s.MaSanPham = c.MaSanPham
                 GROUP BY s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong,g.Gia, s.Mota, l.TenLoai
                 ORDER BY s.created_at desc`;
     console.log(query);

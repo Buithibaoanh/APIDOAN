@@ -57,14 +57,14 @@ router.post('/ThemDH', (req, res) => {
 
         const queryKhachHang = `SELECT * FROM khachhang WHERE SoDienThoai = '${Sdt}'`;
         db.query(queryKhachHang, (error, result) => {
-            if(error)  res.status(500).send('Loi ket noi csdl');
+            if(error) return res.status(500).send('Loi ket noi csdl');
             else{
                 if(result.length > 0){
                     iDKH = result[0].MaKhachHang;
                     const inserdh = `INSERT INTO donhang (MaKhachHang, NgayDat, TrangThai, ThanhTien)
                                     VALUES ('${iDKH}', NOW(), 0, '${Tongtien}')`;
                     db.query(inserdh, (error, result) => {
-                        if(error) res.status(500).send('Loi ở đơn hàng');
+                        if(error) return res.status(500).send('Loi ở đơn hàng');
                         else{
                             const Donhang_id = result.insertId;
                             const sanphamData = JSON.parse(Sanphamjson);
@@ -77,19 +77,19 @@ router.post('/ThemDH', (req, res) => {
                                     VALUES ('${Donhang_id}', '${MaSanPham}', '${quantity}', '${Gia}')`;
                                 db.query(query, (error,result) => {
                                     if(error) res.status(500).send('Loi ở đơn hàng');
-                                    res.status(200).json(result);
+                                    return res.status(200).json(result);
 
                                 });
                             }
 
-                            res.status(200).json(result);
+                            return res.status(200).json(result);
                         }
                     });
                 }else{
                     const insertKH = `insert into khachhang (TenKhachHang,SoDienThoai, DiaChi, Email, created_at, updated_at)
                                         Values('${Hoten}', '${Sdt}', '${Diachi}', '${Email}', Now(), Now());`
                     db.query(insertKH,(error,result)=>{
-                        if(error) res.status(500).send('Loi ket noi csdl');
+                        if(error) return res.status(500).send('Loi ket noi csdl');
                         else{
                             console.log(result);
                             iDKH = result.insertId;
@@ -97,7 +97,7 @@ router.post('/ThemDH', (req, res) => {
                             const inserdh = `INSERT INTO donhang (MaKhachHang, NgayDat, TrangThai, ThanhTien)
                                     VALUES ('${iDKH}', NOW(), 0, '${Tongtien}')`;
                             db.query(inserdh, (error, result) => {
-                                if(error) res.status(500).send('Loi ở đơn hàng');
+                                if(error) return res.status(500).send('Loi ở đơn hàng');
                                 else{
                                     const Donhang_id = result.insertId;
                                     const sanphamData = JSON.parse(Sanphamjson);
@@ -109,21 +109,16 @@ router.post('/ThemDH', (req, res) => {
                                         const query = `
                                             INSERT INTO chitietdonhang (MaDonHang, MaSanPham, SoLuong, GiaBan)
                                             VALUES ('${Donhang_id}', '${MaSanPham}', '${quantity}', '${Gia}')`;
-                                        db.query(query, (error,result) => {
-                                            if(error) res.status(500).send('Loi ở đơn hàng');
-                                            res.status(200).json(result);
-                                        });
+                                        db.query(query, (error,result) => {});
                                     }
 
-                                    res.status(200).json(result);
+                                    return res.status(200).json(result);
                                 }
                             });
                         }
 
                     }); 
                 }
-                
-
             }
         });
     } catch (error) {
