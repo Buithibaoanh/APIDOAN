@@ -9,7 +9,7 @@ router.get('/',(req,res)=>{
                 INNER JOIN giaban AS g ON s.MaSanPham = g.MaSanPham
                 LEFT JOIN chitietdonhang AS c ON s.MaSanPham = c.MaSanPham
                 GROUP BY s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong,g.Gia, s.Mota, l.TenLoai
-                ORDER BY s.MaSanPham desc`;
+                ORDER BY s.created_at desc`;
     console.log(query);
     db.query(query,(error,result)=>{
         if(error) res.status(500).send('Loi ket noi csdl');
