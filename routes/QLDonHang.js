@@ -76,22 +76,9 @@ router.post('/ThemDH', (req, res) => {
                                     INSERT INTO chitietdonhang (MaDonHang, MaSanPham, SoLuong, GiaBan)
                                     VALUES ('${Donhang_id}', '${MaSanPham}', '${quantity}', '${Gia}')`;
                                 db.query(query, (error,result) => {
-                                    let querySp = `Select s.SoLuong from sanpham as s where s.MaSanPham = '${MaSanPham}';`
-                                    db.query(querySp, function(error, result) {
-                                        if (error) {
-                                            return res.status(500).send('Internal Server Error');
-                                        }
-                                        const soLuong = result[0].SoLuong;
-                                        let updateSoLuong = soLuong - quantity;
+                                    if(error) res.status(500).send('Loi ở đơn hàng');
+                                    res.status(200).json(result);
 
-                                        let queryUpdate = `Update sanpham set SoLuong = '${updateSoLuong}' where MaSanPham = '${MaSanPham}'`;
-                                        db.query(queryUpdate, function(error, result) {
-                                            if (error) {
-                                                return res.status(500).send('Internal Server Error');
-                                            }
-
-                                        });
-                                    });
                                 });
                             }
 
@@ -123,22 +110,8 @@ router.post('/ThemDH', (req, res) => {
                                             INSERT INTO chitietdonhang (MaDonHang, MaSanPham, SoLuong, GiaBan)
                                             VALUES ('${Donhang_id}', '${MaSanPham}', '${quantity}', '${Gia}')`;
                                         db.query(query, (error,result) => {
-                                            let querySp = `Select s.SoLuong from sanpham as s where s.MaSanPham = '${MaSanPham}';`
-                                            db.query(querySp, function(error, result) {
-                                                if (error) {
-                                                    return res.status(500).send('Internal Server Error');
-                                                }
-                                                const soLuong = result[0].SoLuong;
-                                                let updateSoLuong = soLuong - quantity;
-
-                                                let queryUpdate = `Update sanpham set SoLuong = '${updateSoLuong}' where MaSanPham = '${MaSanPham}'`;
-                                                db.query(queryUpdate, function(error, result) {
-                                                    if (error) {
-                                                        return res.status(500).send('Internal Server Error');
-                                                    }
-
-                                                });
-                                            });
+                                            if(error) res.status(500).send('Loi ở đơn hàng');
+                                            res.status(200).json(result);
                                         });
                                     }
 
@@ -273,22 +246,22 @@ router.post('/edit/:id', function(req, res) {
                                 return res.status(500).send('Internal Server Error');
                             }
 
-                            // let querySp = `Select s.SoLuong from sanpham as s where s.MaSanPham = '${row.MaSanPham}';`
-                            // db.query(querySp, function(error, result) {
-                            //     if (error) {
-                            //         return res.status(500).send('Internal Server Error');
-                            //     }
-                            //     const soLuong = result[0].SoLuong;
-                            //     let updateSoLuong = soLuong - row.SoLuong;
+                            let querySp = `Select s.SoLuong from sanpham as s where s.MaSanPham = '${row.MaSanPham}';`
+                            db.query(querySp, function(error, result) {
+                                if (error) {
+                                    res.status(500).send('Internal Server Error');
+                                }
+                                const soLuong = result[0].SoLuong;
+                                let updateSoLuong = soLuong - row.SoLuong;
 
-                            //     let queryUpdate = `Update sanpham set SoLuong = '${updateSoLuong}' where MaSanPham = '${row.MaSanPham}'`;
-                            //     db.query(queryUpdate, function(error, result) {
-                            //         if (error) {
-                            //             return res.status(500).send('Internal Server Error');
-                            //         }
+                                let queryUpdate = `Update sanpham set SoLuong = '${updateSoLuong}' where MaSanPham = '${row.MaSanPham}'`;
+                                db.query(queryUpdate, function(error, result) {
+                                    if (error) {
+                                        res.status(500).send('Internal Server Error');
+                                    }
 
-                            //     });
-                            // });
+                                });
+                            });
                             
                         });
                     })
