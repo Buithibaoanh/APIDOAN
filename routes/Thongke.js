@@ -18,7 +18,7 @@ router.get('/thongketheongay/:day', function(req, res) {
                 INNER JOIN sanpham AS sp ON ctdh.MaSanPham = sp.MaSanPham
             WHERE 
                 DATE(dh.NgayDat) = '${ngay}'
-                AND dh.TrangThai = 2
+                AND dh.TrangThai = 3
             GROUP BY 
                 kh.MaKhachHang,
                 kh.TenKhachHang,
@@ -58,7 +58,7 @@ router.get('/thongketheothang/:month', function(req, res) {
             INNER JOIN sanpham AS sp ON ctdh.MaSanPham = sp.MaSanPham
         WHERE 
             DATE_FORMAT(dh.NgayDat, '%Y-%m') = ?
-            AND dh.TrangThai = 2
+            AND dh.TrangThai = 3
 
         GROUP BY 
             
