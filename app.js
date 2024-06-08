@@ -55,6 +55,11 @@ app.use('/Thongke',ThongkeRoute);
 var KhoRouter = require('./routes/QLKho');
 app.use('/kho',KhoRouter);
 
+var TrangchuRouter = require('./routes/trangchuadmin');
+app.use('/trangchuadmin',TrangchuRouter);
+ 
+var QLHoaDonNhapRouter = require('./routes/QLHoaDonNhap');
+app.use('/hoadonnhap',QLHoaDonNhapRouter);
 
 
 

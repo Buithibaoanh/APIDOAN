@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
             k.SoDienThoai, 
             d.NgayDat,
             CASE 
-                WHEN d.TrangThai = 0 THEN 'Chờ xử lý'
+                WHEN d.TrangThai = 0 THEN 'Chờ xác nhận'
                 WHEN d.TrangThai = 1 THEN 'Đã xác nhận'
                 WHEN d.TrangThai = 2 THEN 'Đang giao hàng'
                 WHEN d.TrangThai = 3 THEN 'Giao thành công'

@@ -5,4 +5,5 @@ const connection = mysql2.createConnection({
     password:'12345678',
     database: 'bantivi',
   });
+  
 module.exports = connection;

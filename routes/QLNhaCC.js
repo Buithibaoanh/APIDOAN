@@ -1,13 +1,36 @@
 var router= require('express')();
 var db=require('./dbconnext');
 
-router.get('/',(req,res)=>{
-    var query='SELECT * FROM nhacungcap order by created_at desc;';
-    db.query(query,(error,result)=>{
-        if(error) res.status(500).send('Loi ket noi csdl');
+router.get('/', (req, res) => {
+    var query = `
+        SELECT 
+            ncc.MaNhaCungCap,
+            ncc.TenNhaCungCap,
+            ncc.SoDienThoai,
+            ncc.DiaChi,
+            
+            ncc.created_at,
+            ncc.updated_at,
+            SUM(hdn.ThanhTien) AS TongThanhTien
+        FROM 
+            nhacungcap ncc
+        LEFT JOIN 
+            hoadonnhap hdn ON ncc.MaNhaCungCap = hdn.MaNhaCungCap
+        GROUP BY 
+            ncc.MaNhaCungCap, 
+            ncc.TenNhaCungCap, 
+            ncc.SoDienThoai, 
+            ncc.DiaChi, 
+             
+            ncc.created_at, 
+            ncc.updated_at
+        ORDER BY 
+            ncc.created_at DESC;
+    `;
+    db.query(query, (error, result) => {
+        if (error) return res.status(500).send('Lỗi kết nối cơ sở dữ liệu');
         res.json(result);
     });
-
 });
 router.get('/get-one/:id',function(req,res){
     var query ='SELECT * FROM nhacungcap where MaNhaCungCap= '+req.params.id;
