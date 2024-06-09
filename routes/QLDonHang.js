@@ -18,6 +18,7 @@ router.get('/', (req, res) => {
             k.DiaChi, 
             k.SoDienThoai, 
             d.NgayDat,
+            k.Email,
             CASE 
                 WHEN d.TrangThai = 0 THEN 'Chờ xác nhận'
                 WHEN d.TrangThai = 1 THEN 'Đã xác nhận'

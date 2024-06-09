@@ -61,6 +61,9 @@ app.use('/trangchuadmin',TrangchuRouter);
 var QLHoaDonNhapRouter = require('./routes/QLHoaDonNhap');
 app.use('/QLhoadonnhap',QLHoaDonNhapRouter);
 
+var SendMailRouter = require('./routes/SendMail');
+app.use('/SendMail',SendMailRouter);
+
 
 
 
