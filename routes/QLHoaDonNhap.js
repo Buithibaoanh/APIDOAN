@@ -22,6 +22,50 @@ router.get('/', (req, res) => {
         res.json(result);
     });
 });
+
+router.post('/Them', function(req, res) {
+    var MaSanPham = req.body.MaSanPham;
+    var SoLuong = req.body.SoLuong;
+    var Gia = req.body.Gia;
+    var MaNhaCungCap = req.body.MaNhaCungCap;
+
+
+    // Thêm hóa đơn nhập
+    let query1 = `INSERT INTO hoadonnhap (MaNhaCungCap, NgayNhap, ThanhTien, created_at, updated_at) 
+                        VALUES ('${MaNhaCungCap}', NOW(), '${SoLuong * Gia}', NOW(), NOW())`;
+    db.query(query1, function(error, result) {
+        if (error) {
+            console.error(error);
+            res.status(500).send('Lỗi khi thêm hóa đơn nhập');
+            return;
+        }
+
+        let idHDN = result.insertId;
+
+        // Thêm chi tiết hóa đơn nhập
+        let query2 = `INSERT INTO chitiethoadonnhap (MaHoaDonNhap, MaSanPham, SoLuong, DonGia, created_at, updated_at) 
+                            VALUES ('${idHDN}', '${MaSanPham}', '${SoLuong}', '${Gia}', NOW(), NOW())`;
+        db.query(query2, function(error, result) {
+            if (error) {
+                console.error(error);
+                res.status(500).send('Lỗi khi thêm chi tiết hóa đơn nhập');
+                return;
+            }
+
+            // Cập nhật số lượng sản phẩm
+            let query3 = `UPDATE sanpham SET SoLuong = SoLuong + ${SoLuong} WHERE MaSanPham = '${MaSanPham}'`;
+            db.query(query3, function(error, result) {
+                if (error) {
+                    console.error(error);
+                    res.status(500).send('Lỗi khi cập nhật số lượng sản phẩm');
+                    return;
+                }
+
+                res.status(200).json({ message: 'Đã thêm hóa đơn nhập thành công' });
+            });
+        });
+    });
+});
 // router.get('/get-one/:id',function(req,res){
 //     var query ='SELECT s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong, s.Mota, l.TenLoai from sanpham as s inner join loaisanpham as l on s.MaLoai = l.MaLoai where s.MaSanPham='+req.params.id;
 //     db.query(query,function(error,result){

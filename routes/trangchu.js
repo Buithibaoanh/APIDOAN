@@ -87,16 +87,17 @@ router.get('/categori/:id', function(req, res) {
 
 router.post('/search', function(req, res){
     let keyword = req.body.keyword;
+    console.log(keyword);
     var query = `SELECT s.MaSanPham,s.TenSanPham, s.Anh, s.SoLuong, s.Mota, tskt.KichCoManHinh, 
                 tskt.DoPhanGiai, tskt.LoaiManHinh, tskt.HeDieuHanh, tskt.ChatLieuChanDe, 
                 tskt.ChatLieuVienTiVi, g.Gia, SUM(c.SoLuong) AS TongSoLuongDaBan
                 FROM sanpham AS s INNER JOIN giaban AS g ON s.MaSanPham = g.MaSanPham 
                 INNER JOIN thongsokythuat AS tskt ON s.MaSanPham = tskt.MaSanPham
                 LEFT JOIN chitiethoadonban AS c ON s.MaSanPham = c.MaSanPham
-                GROUP BY s.MaSanPham,s.TenSanPham, s.Anh, s.SoLuong, s.Mota, tskt.KichCoManHinh, 
-                tskt.DoPhanGiai, tskt.LoaiManHinh, tskt.HeDieuHanh, tskt.ChatLieuChanDe, 
-                tskt.ChatLieuVienTiVi, g.Gia
-                where s.TenSanPham like '%${keyword}'`;
+                where s.TenSanPham like '%${keyword}%'
+                GROUP BY s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong, s.Mota, 
+                tskt.KichCoManHinh, tskt.DoPhanGiai, tskt.LoaiManHinh, tskt.HeDieuHanh, 
+                tskt.ChatLieuChanDe, tskt.ChatLieuVienTiVi, g.Gia`;
     db.query(query,function(error,result){
         if(error) res.status(500).send('Loi cau lenh truy van');
         res.json(result);

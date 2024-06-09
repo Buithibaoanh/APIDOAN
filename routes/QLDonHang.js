@@ -381,4 +381,47 @@ router.post('/updateStatus/:id', async (req, res) => {
         res.status(500).send('Lỗi kết nối cơ sở dữ liệu');
     }
 })
+//lọc đơn hàng theo trạng thái
+router.post('/search', (req, res) => {
+    const { trangThai } = req.body;
+  
+    // Kiểm tra tham số đầu vào
+    if (trangThai === undefined) {
+      return res.status(400).json({ error: 'Missing required parameter: trangThai' });
+    }
+  
+    // Truy vấn cơ sở dữ liệu để lấy danh sách đơn hàng theo trạng thái
+    
+    const query = `
+        SELECT 
+        dh.MaDonHang,
+        kh.TenKhachHang,
+        kh.DiaChi,
+        kh.SoDienThoai,
+        dh.NgayDat,
+        CASE 
+        WHEN dh.TrangThai = 0 THEN 'Chờ xác nhận'
+        WHEN dh.TrangThai = 1 THEN 'Đã xác nhận'
+        WHEN dh.TrangThai = 2 THEN 'Đang giao hàng'
+        WHEN dh.TrangThai = 3 THEN 'Giao thành công'
+        WHEN dh.TrangThai = 4 THEN 'Đã hoàn hàng'
+        ELSE 'Trạng thái không xác định'
+        END AS TrangThaiText
+    FROM 
+    donhang AS dh
+    INNER JOIN 
+    khachhang AS kh ON dh.MaKhachHang = kh.MaKhachHang
+    WHERE 
+    dh.TrangThai = ?
+    ORDER BY 
+    dh.NgayDat DESC;
+    `;
+  
+    db.query(query, [trangThai], (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(result);
+    });
+  });
 module.exports = router;

@@ -165,8 +165,8 @@ router.post('/orders/Thongke', (req, res) => {
                 SUM(ctdh.GiaBan * ctdh.SoLuong) AS TongThanhTien,
                 kh.SoDienThoai,
                 kh.DiaChi,
-                
-                dh.created_at
+                dh.created_at,
+                dh.MaDonHang
             FROM 
                 donhang AS dh
                 INNER JOIN chitietdonhang AS ctdh ON dh.MaDonHang = ctdh.MaDonHang
@@ -181,6 +181,7 @@ router.post('/orders/Thongke', (req, res) => {
                 ctdh.GiaBan,
                 kh.SoDienThoai,
                 kh.DiaChi,
+                dh.MaDonHang,
                 dh.created_at`
 
   db.query(query, [startDate, endDate], (err, result) => {

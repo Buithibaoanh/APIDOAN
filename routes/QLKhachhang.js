@@ -10,6 +10,7 @@ var db=require('./dbconnext');
             kh.DiaChi,
             kh.Email,
             kh.created_at,
+            GROUP_CONCAT(dh.MaDonHang) AS DanhSachDonHang,
             SUM(dh.thanhtien) AS TongThanhTien
         FROM 
             khachhang kh
@@ -38,19 +39,21 @@ var db=require('./dbconnext');
 
 //     });
 // });
-// router.post('/edit/:id',function(req,res){
-//     var tenkhachhang= req.body.TenKhachHang;
-//     var sodienthoai= req.body.SoDienThoai;
-//     var diachi= req.body.DiaChi;
-//     var email= req.body.Email;
-//     var anh= req.body.Anh;
-//     console.log(req.body);
-//     var query="update khachhang set TenKhachHang='"+ tenkhachhang+"',SoDienThoai='"+sodienthoai+"',DiaChi='"+diachi+"',Email='"+email+"',Anh='"+anh+"', updated_at=NOW() where MaKhachHang='"+req.params.id+"'";
-//     db.query(query,function(error,result){
-//         if(error) res.status(500).send('Loi cau lenh truy van');
-//         res.json(result);
+router.get('/getOrders/:id',function(req,res){
 
-//     });
+    let { id } = req.params;
+    console.log(id);
+    var query = `SELECT s.TenSanPham
+                FROM donhang as dh inner join 
+                chitietdonhang as ctdh on dh.MaDonHang = ctdh.MaDonHang
+                inner join sanpham as s on ctdh.MaSanPham = s.MaSanPham
+                where dh.MaDonHang in (${id})`;
+    db.query(query,function(error,result){
+        if(error) res.status(500).send('Loi cau lenh truy van');
+        res.json(result);
+
+    });
+});
 
 // });
 // router.post('/add',function(req,res){
