@@ -59,7 +59,7 @@ var TrangchuRouter = require('./routes/trangchuadmin');
 app.use('/trangchuadmin',TrangchuRouter);
  
 var QLHoaDonNhapRouter = require('./routes/QLHoaDonNhap');
-app.use('/hoadonnhap',QLHoaDonNhapRouter);
+app.use('/QLhoadonnhap',QLHoaDonNhapRouter);
 
 
 

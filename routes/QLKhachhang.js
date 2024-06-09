@@ -43,11 +43,23 @@ router.get('/getOrders/:id',function(req,res){
 
     let { id } = req.params;
     console.log(id);
-    var query = `SELECT s.TenSanPham
-                FROM donhang as dh inner join 
-                chitietdonhang as ctdh on dh.MaDonHang = ctdh.MaDonHang
-                inner join sanpham as s on ctdh.MaSanPham = s.MaSanPham
-                where dh.MaDonHang in (${id})`;
+    var query = `SELECT 
+            s.TenSanPham,
+            ctdh.SoLuong,
+            ctdh.GiaBan,
+            dh.NgayDat,
+            CASE 
+            WHEN dh.TrangThai = 0 THEN 'Chờ xác nhận'
+            WHEN dh.TrangThai = 1 THEN 'Đã xác nhận'
+            WHEN dh.TrangThai = 2 THEN 'Đang giao hàng'
+            WHEN dh.TrangThai = 3 THEN 'Giao thành công'
+            WHEN dh.TrangThai = 4 THEN 'Đã hoàn hàng'
+            ELSE 'Trạng thái không xác định'
+            END AS TrangThaiText
+        FROM donhang as dh inner join 
+        chitietdonhang as ctdh on dh.MaDonHang = ctdh.MaDonHang
+        inner join sanpham as s on ctdh.MaSanPham = s.MaSanPham
+        where dh.MaDonHang in (${id})`;
     db.query(query,function(error,result){
         if(error) res.status(500).send('Loi cau lenh truy van');
         res.json(result);

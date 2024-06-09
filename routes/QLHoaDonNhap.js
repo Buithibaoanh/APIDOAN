@@ -66,52 +66,42 @@ router.post('/Them', function(req, res) {
         });
     });
 });
-// router.get('/get-one/:id',function(req,res){
-//     var query ='SELECT s.MaSanPham, s.TenSanPham, s.Anh, s.SoLuong, s.Mota, l.TenLoai from sanpham as s inner join loaisanpham as l on s.MaLoai = l.MaLoai where s.MaSanPham='+req.params.id;
-//     db.query(query,function(error,result){
-//         if(error) res.status(500).send('Loi cau lenh truy van');
-//         res.json(result);
 
-//     });
-// });
-// router.put('/edit/:id',function(req,res){
-//     var tensanpham= req.body.TenSanPham;
-//     var maloai= req.body.MaLoai;
-//     var anh= req.body.Anh;
-//     var soluong= req.body.SoLuong;
-//     var mota= req.body.Mota;
-//     var query="update sanpham set TenSanPham='"+tensanpham+"',MaLoai='"+maloai+"',Anh='"+anh+"',SoLuong='"+soluong+"',Mota='"+mota+"', updated_at=NOW() where MaSanPham= "+req.params.id+"";
-//     db.query(query,function(error,result){
-//         if(error) res.status(500).send('Loi cau lenh truy van');
-//         res.json(result);
+// chi tiết hóa đơn nhập
+router.get('/get-one/:id', function(req, res) {
+    var query = `
+        SELECT 
+            hdn.MaHoaDonNhap, 
+            sp.TenSanPham, 
+            ctdh.SoLuong, 
+            ctdh.DonGia, 
+            ctdh.SoLuong * ctdh.DonGia AS ThanhTien
+            
+        FROM 
+            ChiTietHoaDonNhap AS ctdh
+            INNER JOIN SanPham AS sp ON ctdh.MaSanPham = sp.MaSanPham
+            INNER JOIN HoaDonNhap AS hdn ON ctdh.MaHoaDonNhap = hdn.MaHoaDonNhap
+            
+        WHERE 
+            hdn.MaHoaDonNhap = ${req.params.id}`;
+    
+    db.query(query, function(error, result) {
+        if (error) {
+            res.status(500).send('Loi cau lenh truy van');
+        } else {
+            res.json(result);
+        }
+    });
+});
 
-//     });
+//api lấy ra chi tiết hóa đơn nhập theo mã
+router.get('/get-one-hoadonnhap/:id',function(req,res){
+    var query ='SELECT * FROM hoadonnhap where MaHoaDonNhap= '+req.params.id;
+    db.query(query,function(error,result){
+        if(error) res.status(500).send('Loi cau lenh truy van');
+        res.json(result);
 
-// });
+    });
+});
 
-
-// router.post('/add',function(req,res){
-//     var tensanpham= req.body.TenSanPham;
-//     var maloai= req.body.MaLoai;
-//     var anh= req.body.Anh;
-//     var soluong= req.body.SoLuong;
-//     var mota= req.body.Mota;
-//     var query="insert into sanpham (TenSanPham,MaLoai,Anh,SoLuong,Mota,NgayTao,created_at) values('"+tensanpham+"','"+maloai+"','"+anh+"','"+soluong+"','"+mota+"',NOW(),NOW())";
-//     db.query(query,function(error,result){
-//         if(error) res.status(500).send('Loi cau lenh truy van');
-//         res.status(200).json(result);
-
-//     });
-
-// });
-// router.delete('/remove/:id',function(req,res){
-//     console.log(req.params.id);
-//     var query='delete from sanpham where MaSanPham='+req.params.id;
-//     console.log(query);
-//     db.query(query,function(error,result){
-//         if(error) res.status(500).send('Loi cau lenh truy van');
-//         res.json(result);
-//     });
-
-// });
 module.exports = router;
